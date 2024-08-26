@@ -6,8 +6,8 @@ import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
-
 import java.io.InputStream;
+import java.time.Instant;
 
 public class Card {
     public static void addCard(MessageReceivedEvent event) {
@@ -56,9 +56,11 @@ public class Card {
         try {
             DBTools.openConnection();
 
-            var messageText = event.getMessage().getContentDisplay();
-            var params = event.getMessage().getContentDisplay().split(" ");
-            var image_name = params[1];
+            var attachment = event.getMessage().getAttachments().get(0);
+            String filename = attachment.getFileName();
+            String timestamp = Instant.now().toString().replace(":", "-");
+            String label = timestamp + "_" + filename;
+            String discordUrl = attachment.getUrl();
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(Config.CARD_URL())
@@ -67,15 +69,7 @@ public class Card {
 
             CardService service = retrofit.create(CardService.class);
 
-            var attachment = event.getMessage().getAttachments().get(0);
-            var stream = attachment.getProxy().download().get();
-
-            var part = MultipartBody.Part.createFormData(
-                    "image",
-                    "myPic",
-                    RequestBody.create(stream.readAllBytes(), MediaType.parse("image/*"))
-            );
-            var res = service.uploadImage(RequestBody.create(image_name, MediaType.parse("text/plain")), part).execute();
+            var res = service.addImage(label, discordUrl).execute();
 
             event.getMessage().reply(res.body() == null ? "nope": res.body()).queue();
 

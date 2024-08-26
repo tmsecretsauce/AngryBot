@@ -5,9 +5,8 @@ import retrofit2.Call;
 import retrofit2.http.*;
 
 public interface CardService {
-    @Multipart
     @POST("image")
-    Call<String> uploadImage(@Part("label") RequestBody label, @Part MultipartBody.Part image);
+    Call<String> addImage(@Query("label") String label, @Query("discord_url") String discordUrl);
 
     @GET("card")
     Call<ResponseBody> getCard(@Query("id") int id);
