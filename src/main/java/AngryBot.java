@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AngryBot extends ListenerAdapter {
 
-    static final String command = "<";
+    static final String command = ">";
     private static final Map<String, List<Long>> userMessageTimes = new HashMap<>();
     private static final int SPAM_MESSAGE_THRESHOLD = 40; // Adjust this to the number of messages to consider as spam
     private static final int SPAM_TIME_WINDOW_SECONDS = 60; // Adjust this to the time window in seconds
